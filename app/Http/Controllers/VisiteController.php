@@ -13,12 +13,20 @@ class VisiteController extends Controller
      */
     public function index()
     {
-        $visites = Visite::with('client')->orderBy('id', 'desc')->get();
-        return view('visites.index', compact('visites'));
+        // Récupération des visites avec leurs relations
+        $visites = Visite::with(['client', 'user'])
+            ->orderBy('id', 'desc')
+            ->get();
+
+        // Récupération de tous les clients pour le select du formulaire
+        $clients = Client::orderBy('nom')->get();
+
+        // On envoie les deux variables à la vue
+        return view('visites.index', compact('visites', 'clients'));
     }
 
     /**
-     * Formulaire d'ajout d'une visite.
+     * Formulaire de création.
      */
     public function create()
     {
@@ -27,31 +35,39 @@ class VisiteController extends Controller
     }
 
     /**
-     * Enregistrement d'une visite.
+     * Enregistrement d’une visite.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'client_id'          => 'required|exists:clients,id',
-            'date_arrivee'       => 'required|date',
-            'motif'              => 'required|string',
-            'personne_rencontree'=> 'required|string|max:255',
-            'date_sortie'        => 'nullable|date',
-            'statut'             => 'nullable|in:EN_COURS,TERMINEE',
+            'client_id'           => 'required|exists:clients,id',
+            'date_arrivee'        => 'required|date',
+            'motif'               => 'required|string',
+            'personne_rencontree' => 'required|string',
+            'date_sortie'         => 'nullable|date',
+            'statut'              => 'required|in:EN_COURS,TERMINEE',
         ]);
 
-        Visite::create($request->all());
+        $data = $request->all();
+        $data['user_id'] = auth()->id(); // Qui a enregistré cette visite
 
-        return redirect()->route('visites.index')->with('success', 'Visite enregistrée.');
+        Visite::create($data);
+
+        return redirect()
+            ->route('visites.index')
+            ->with('success', 'Visite enregistrée avec succès.');
     }
 
+    /**
+     * Détail d’une visite (optionnel).
+     */
     public function show(Visite $visite)
     {
         return view('visites.show', compact('visite'));
     }
 
     /**
-     * Formulaire de modification.
+     * Formulaire d’édition.
      */
     public function edit(Visite $visite)
     {
@@ -65,25 +81,31 @@ class VisiteController extends Controller
     public function update(Request $request, Visite $visite)
     {
         $request->validate([
-            'client_id'          => 'required|exists:clients,id',
-            'date_arrivee'       => 'required|date',
-            'motif'              => 'required|string',
-            'personne_rencontree'=> 'required|string|max:255',
-            'date_sortie'        => 'nullable|date',
-            'statut'             => 'required|in:EN_COURS,TERMINEE',
+            'client_id'           => 'required|exists:clients,id',
+            'date_arrivee'        => 'required|date',
+            'motif'               => 'required|string',
+            'personne_rencontree' => 'required|string',
+            'date_sortie'         => 'nullable|date',
+            'statut'              => 'required|in:EN_COURS,TERMINEE',
         ]);
 
-        $visite->update($request->all());
+        $data = $request->all();
+        $visite->update($data);
 
-        return redirect()->route('visites.index')->with('success', 'Visite mise à jour.');
+        return redirect()
+            ->route('visites.index')
+            ->with('success', 'Visite mise à jour avec succès.');
     }
 
     /**
-     * Suppression d'une visite.
+     * Suppression.
      */
     public function destroy(Visite $visite)
     {
         $visite->delete();
-        return redirect()->route('visites.index')->with('success', 'Visite supprimée.');
+
+        return redirect()
+            ->route('visites.index')
+            ->with('success', 'Visite supprimée.');
     }
 }

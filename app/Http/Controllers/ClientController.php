@@ -8,16 +8,17 @@ use Illuminate\Http\Request;
 class ClientController extends Controller
 {
     /**
-     * Liste des clients.
+     * Afficher la liste des clients.
      */
     public function index()
     {
         $clients = Client::orderBy('nom')->get();
+
         return view('clients.index', compact('clients'));
     }
 
     /**
-     * Formulaire d'ajout d'un client.
+     * Afficher le formulaire de création.
      */
     public function create()
     {
@@ -25,7 +26,7 @@ class ClientController extends Controller
     }
 
     /**
-     * Enregistrement d’un nouveau client.
+     * Enregistrer un nouveau client.
      */
     public function store(Request $request)
     {
@@ -37,13 +38,15 @@ class ClientController extends Controller
             'entreprise'=> 'nullable|string|max:255',
         ]);
 
-        Client::create($request->all());
+        Client::create($request->only(['nom', 'prenom', 'telephone', 'email', 'entreprise']));
 
-        return redirect()->route('clients.index')->with('success', 'Client ajouté avec succès.');
+        return redirect()
+            ->route('clients.index')
+            ->with('success', 'Client ajouté avec succès.');
     }
 
     /**
-     * Affichage d’un client (non utilisé mais on le laisse).
+     * Afficher un client (facultatif).
      */
     public function show(Client $client)
     {
@@ -51,7 +54,7 @@ class ClientController extends Controller
     }
 
     /**
-     * Formulaire de modification.
+     * Afficher le formulaire d’édition.
      */
     public function edit(Client $client)
     {
@@ -59,7 +62,7 @@ class ClientController extends Controller
     }
 
     /**
-     * Mise à jour du client.
+     * Mettre à jour un client.
      */
     public function update(Request $request, Client $client)
     {
@@ -71,18 +74,22 @@ class ClientController extends Controller
             'entreprise'=> 'nullable|string|max:255',
         ]);
 
-        $client->update($request->all());
+        $client->update($request->only(['nom', 'prenom', 'telephone', 'email', 'entreprise']));
 
-        return redirect()->route('clients.index')->with('success', 'Client mis à jour avec succès.');
+        return redirect()
+            ->route('clients.index')
+            ->with('success', 'Client mis à jour avec succès.');
     }
 
     /**
-     * Suppression d’un client.
+     * Supprimer un client.
      */
     public function destroy(Client $client)
     {
         $client->delete();
 
-        return redirect()->route('clients.index')->with('success', 'Client supprimé.');
+        return redirect()
+            ->route('clients.index')
+            ->with('success', 'Client supprimé avec succès.');
     }
 }

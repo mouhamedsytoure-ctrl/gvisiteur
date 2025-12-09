@@ -14,6 +14,7 @@ class Visite extends Model
      */
     protected $fillable = [
         'client_id',
+        'user_id',
         'date_arrivee',
         'date_sortie',
         'motif',
@@ -27,5 +28,13 @@ class Visite extends Model
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    /**
+     * Une visite est enregistrée par un user (admin ou secrétaire).
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
