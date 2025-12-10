@@ -25,6 +25,7 @@
         <form action="{{ route('visites.store') }}" method="POST" autocomplete="off" id="form-visite">
             @csrf
 
+            {{-- CLIENT --}}
             <div class="mb-3">
                 <label class="form-label">Client</label>
                 <select name="client_id" class="form-select" required>
@@ -37,8 +38,13 @@
                 </select>
             </div>
 
-            <div class="row">
+            {{-- NOM DU VISITEUR --}}
+            <div class="mb-3">
+                <label class="form-label">Nom du visiteur</label>
+                <input type="text" name="nom_visiteur" class="form-control" required>
+            </div>
 
+            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Date & heure d'arrivée</label>
                     <input type="datetime-local" name="date_arrivee" id="date_arrivee" class="form-control" required>
@@ -51,7 +57,6 @@
                         Se remplit automatiquement 1h après l'arrivée.
                     </small>
                 </div>
-
             </div>
 
             <div class="mb-3">
@@ -89,42 +94,38 @@
         const dateSortieInput = document.getElementById('date_sortie');
         const statutInput = document.getElementById('statut');
 
-        // Fonction pour ajouter une heure et formater
         function addOneHour(dateStr) {
             const date = new Date(dateStr);
             const oneHourLater = new Date(date.getTime() + 60 * 60 * 1000);
-            
+
             const year = oneHourLater.getFullYear();
             const month = String(oneHourLater.getMonth() + 1).padStart(2, '0');
             const day = String(oneHourLater.getDate()).padStart(2, '0');
             const hours = String(oneHourLater.getHours()).padStart(2, '0');
             const minutes = String(oneHourLater.getMinutes()).padStart(2, '0');
-            
+
             return `${year}-${month}-${day}T${hours}:${minutes}`;
         }
 
-        // Auto-remplir la sortie quand on entre l'arrivée
         dateArriveeInput.addEventListener('change', function () {
             if (this.value) {
                 dateSortieInput.value = addOneHour(this.value);
             }
         });
 
-        // Vérifier et changer le statut après 1h
         function checkElapsedTime() {
             if (!dateArriveeInput.value) return;
 
             const arrivee = new Date(dateArriveeInput.value);
             const maintenant = new Date();
             const diffMs = maintenant - arrivee;
-            const diff1h = 60 * 60 * 1000; // 1 heure en millisecondes
+            const diff1h = 60 * 60 * 1000;
 
             if (diffMs >= diff1h && statutInput.value !== 'TERMINEE') {
                 statutInput.value = 'TERMINEE';
             }
         }
 
-        // Vérifier toutes les 5 secondes
         setInterval(checkElapsedTime, 5000);
     });
 </script>

@@ -8,45 +8,51 @@ use Illuminate\Http\Request;
 class ClientController extends Controller
 {
     /**
-     * Afficher la liste des clients.
+     * Liste des clients + formulaire inline.
      */
     public function index()
     {
-        $clients = Client::orderBy('nom')->get();
+        // On récupère tous les clients pour l’historique
+        $clients = Client::orderBy('nom')
+            ->orderBy('prenom')
+            ->get();
 
         return view('clients.index', compact('clients'));
     }
 
     /**
-     * Afficher le formulaire de création.
+     * Formulaire de création (optionnel si tu utilises tout en inline).
+     * Tu peux même ne pas l’utiliser et toujours passer par index().
      */
     public function create()
     {
-        return view('clients.create');
+        return redirect()->route('clients.index');
     }
 
     /**
-     * Enregistrer un nouveau client.
+     * Enregistrement d’un client (soumission du formulaire à gauche).
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nom'       => 'required|string|max:255',
-            'prenom'    => 'required|string|max:255',
-            'telephone' => 'required|string|max:20',
-            'email'     => 'nullable|email',
-            'entreprise'=> 'nullable|string|max:255',
+        $validated = $request->validate([
+            'nom'        => 'required|string|max:255',
+            'prenom'     => 'required|string|max:255',
+            'telephone'  => 'nullable|string|max:50',
+            'email'      => 'nullable|email|max:255',
+            'entreprise' => 'nullable|string|max:255',
+            'adresse'    => 'nullable|string',
         ]);
 
-        Client::create($request->only(['nom', 'prenom', 'telephone', 'email', 'entreprise']));
+        Client::create($validated);
 
         return redirect()
             ->route('clients.index')
-            ->with('success', 'Client ajouté avec succès.');
+            ->with('success', 'Client enregistré avec succès.');
     }
 
     /**
-     * Afficher un client (facultatif).
+     * Détail d’un client (si tu veux une page dédiée).
+     * Avec ton système de détails inline, ce n’est pas obligatoire.
      */
     public function show(Client $client)
     {
@@ -54,7 +60,8 @@ class ClientController extends Controller
     }
 
     /**
-     * Afficher le formulaire d’édition.
+     * Formulaire d’édition d’un client.
+     * Tu peux soit utiliser une page séparée, soit faire un modal plus tard.
      */
     public function edit(Client $client)
     {
@@ -62,19 +69,20 @@ class ClientController extends Controller
     }
 
     /**
-     * Mettre à jour un client.
+     * Mise à jour d’un client.
      */
     public function update(Request $request, Client $client)
     {
-        $request->validate([
-            'nom'       => 'required|string|max:255',
-            'prenom'    => 'required|string|max:255',
-            'telephone' => 'required|string|max:20',
-            'email'     => 'nullable|email',
-            'entreprise'=> 'nullable|string|max:255',
+        $validated = $request->validate([
+            'nom'        => 'required|string|max:255',
+            'prenom'     => 'required|string|max:255',
+            'telephone'  => 'nullable|string|max:50',
+            'email'      => 'nullable|email|max:255',
+            'entreprise' => 'nullable|string|max:255',
+            'adresse'    => 'nullable|string',
         ]);
 
-        $client->update($request->only(['nom', 'prenom', 'telephone', 'email', 'entreprise']));
+        $client->update($validated);
 
         return redirect()
             ->route('clients.index')
@@ -82,7 +90,7 @@ class ClientController extends Controller
     }
 
     /**
-     * Supprimer un client.
+     * Suppression d’un client.
      */
     public function destroy(Client $client)
     {

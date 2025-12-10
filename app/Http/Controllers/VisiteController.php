@@ -13,15 +13,12 @@ class VisiteController extends Controller
      */
     public function index()
     {
-        // Récupération des visites avec leurs relations
         $visites = Visite::with(['client', 'user'])
             ->orderBy('id', 'desc')
             ->get();
 
-        // Récupération de tous les clients pour le select du formulaire
         $clients = Client::orderBy('nom')->get();
 
-        // On envoie les deux variables à la vue
         return view('visites.index', compact('visites', 'clients'));
     }
 
@@ -39,8 +36,9 @@ class VisiteController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'client_id'           => 'required|exists:clients,id',
+            'nom_visiteur'        => 'required|string|max:255',
             'date_arrivee'        => 'required|date',
             'motif'               => 'required|string',
             'personne_rencontree' => 'required|string',
@@ -48,10 +46,9 @@ class VisiteController extends Controller
             'statut'              => 'required|in:EN_COURS,TERMINEE',
         ]);
 
-        $data = $request->all();
-        $data['user_id'] = auth()->id(); // Qui a enregistré cette visite
+        $validated['user_id'] = auth()->id();
 
-        Visite::create($data);
+        Visite::create($validated);
 
         return redirect()
             ->route('visites.index')
@@ -59,7 +56,7 @@ class VisiteController extends Controller
     }
 
     /**
-     * Détail d’une visite (optionnel).
+     * Détail d’une visite (si tu l’utilises).
      */
     public function show(Visite $visite)
     {
@@ -80,8 +77,9 @@ class VisiteController extends Controller
      */
     public function update(Request $request, Visite $visite)
     {
-        $request->validate([
+        $validated = $request->validate([
             'client_id'           => 'required|exists:clients,id',
+            'nom_visiteur'        => 'required|string|max:255',
             'date_arrivee'        => 'required|date',
             'motif'               => 'required|string',
             'personne_rencontree' => 'required|string',
@@ -89,8 +87,7 @@ class VisiteController extends Controller
             'statut'              => 'required|in:EN_COURS,TERMINEE',
         ]);
 
-        $data = $request->all();
-        $visite->update($data);
+        $visite->update($validated);
 
         return redirect()
             ->route('visites.index')

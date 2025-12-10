@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Gestion des visites')</title>
 
-    <!-- Bootstrap 5 -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
@@ -15,7 +14,7 @@
             color: #333;
         }
 
-        /* Sidebar */
+        
         .sidebar {
             width: 240px;
             height: 100vh;
@@ -58,20 +57,20 @@
             box-shadow: 0 4px 10px rgba(218, 165, 32, 0.3);
         }
 
-        /* Main content (when logged in) */
+      
         .content {
             margin-left: 250px;
             padding: 30px;
             min-height: 100vh;
         }
 
-        /* Cards */
+        
         .card-dark {
             background: white;
             border: 1px solid #e0e0e0;
             border-radius: 12px;
             color: #333;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(218, 25, 25, 0.08);
             transition: all 0.3s ease;
         }
         .card-dark:hover {
@@ -79,7 +78,7 @@
             border-color: #DAA520;
         }
 
-        /* Titles and text */
+       
         h2, h3, h4 {
             color: #1a1a2e;
             font-weight: 700;
@@ -92,7 +91,7 @@
             font-weight: bold;
         }
 
-        /* Buttons */
+        
         .btn-accent {
             background: #DAA520;
             color: #000;
@@ -116,7 +115,7 @@
             color: #DAA520;
         }
 
-        /* Navbar */
+        
         .navbar-custom {
             background: white;
             border-bottom: 2px solid #f0f0f0;
@@ -135,7 +134,7 @@
             color: #DAA520;
         }
 
-        /* Form controls */
+        
         .form-control, .form-select {
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -147,7 +146,7 @@
             color: #333;
         }
 
-        /* Small text and labels */
+        
         .form-label {
             color: #1a1a2e;
             font-weight: 600;
@@ -157,26 +156,17 @@
             color: #888;
         }
 
-        /* KPI Cards special styling */
-        .card-dark h2 {
-            margin: 0;
-        }
-
-        /* Alerts */
-        .alert {
-            border-radius: 8px;
-            border: none;
-        }
         .alert-danger {
             background-color: #fff3cd;
             color: #856404;
         }
+
     </style>
 </head>
 
 <body>
 
-    <!-- Navbar -->
+    
     @auth
         <nav class="navbar navbar-custom px-3">
             <span class="navbar-brand">GESTION VISITEURS</span>
@@ -196,7 +186,7 @@
         </nav>
     @endauth
 
-    <!-- Sidebar uniquement si connecté -->
+    
     @auth
         <div class="sidebar">
 
@@ -215,6 +205,18 @@
             <a href="{{ route('visites.index') }}" 
                class="{{ request()->is('visites*') ? 'active' : '' }}">
                📝 Visites
+            </a>
+
+            
+            <a href="{{ route('rapports.index') }}" 
+               class="{{ request()->routeIs('rapports.index') ? 'active' : '' }}">
+               📈 Rapports
+            </a>
+
+            
+            <a href="{{ route('help.index') }}" 
+               class="{{ request()->routeIs('help.index') ? 'active' : '' }}">
+               ❓ Aide
             </a>
 
             @if(auth()->user()->role === 'admin')

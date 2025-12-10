@@ -168,9 +168,14 @@
                                     </td>
                                 </tr>
 
-                                {{-- LIGNE DÉTAILS : CLIENT VISITÉ + HEURES + MOTIF --}}
+                                {{-- LIGNE DÉTAILS : VISITEUR + CLIENT VISITÉ + HEURES + MOTIF --}}
                                 <tr id="details-{{ $visite->id }}" class="details-row" style="display:none;">
                                     <td colspan="3" class="bg-light p-3 small">
+
+                                        <div class="mb-1">
+                                            <strong>Visiteur :</strong>
+                                            {{ $visite->nom_visiteur }}
+                                        </div>
 
                                         <div class="mb-1">
                                             <strong>Client visité :</strong>
